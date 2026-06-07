@@ -25,6 +25,7 @@ const LANGUAGES: { code: Language; label: string }[] = [
   { code: "en", label: "EN" },
   { code: "am", label: "አማ" },
   { code: "or", label: "OR" },
+  { code: "zh", label: "中文" },
 ];
 
 export const MenuView: React.FC<MenuViewProps> = ({
@@ -55,9 +56,9 @@ export const MenuView: React.FC<MenuViewProps> = ({
       if (!searchQuery) return true;
       const q = searchQuery.toLowerCase();
       return (
-        item.name[language].toLowerCase().includes(q) ||
-        item.description[language].toLowerCase().includes(q) ||
-        item.ingredients[language].some((i) => i.toLowerCase().includes(q))
+        (item.name[language] ?? item.name.en).toLowerCase().includes(q) ||
+        (item.description[language] ?? item.description.en).toLowerCase().includes(q) ||
+        (item.ingredients[language] ?? item.ingredients.en).some((i) => i.toLowerCase().includes(q))
       );
     });
   }, [activeCategory, searchQuery, language, items]);
@@ -217,7 +218,7 @@ export const MenuView: React.FC<MenuViewProps> = ({
                   <div className="relative w-[130px] h-[130px] flex-shrink-0 bg-cream-dark overflow-hidden">
                     <img
                       src={item.image}
-                      alt={item.name[language]}
+                      alt={(item.name[language] ?? item.name.en)}
                       className="w-full h-full object-cover transition-transform duration-500 hover:scale-110"
                       loading="lazy"
                     />
@@ -251,7 +252,7 @@ export const MenuView: React.FC<MenuViewProps> = ({
                     <div>
                       <div className="flex items-start justify-between gap-2">
                         <h3 className="text-sm font-bold text-black leading-tight line-clamp-1">
-                          {item.name[language]}
+                          {(item.name[language] ?? item.name.en)}
                         </h3>
                         <div className="flex items-center gap-1 flex-shrink-0 bg-gold/10 px-1.5 py-0.5 rounded-full">
                           <Star size={8} className="text-gold fill-gold" />
@@ -259,7 +260,7 @@ export const MenuView: React.FC<MenuViewProps> = ({
                         </div>
                       </div>
                       <p className="text-[11px] text-muted/60 mt-1 line-clamp-2 leading-relaxed">
-                        {item.description[language]}
+                        {(item.description[language] ?? item.description.en)}
                       </p>
                     </div>
 
@@ -304,7 +305,7 @@ export const MenuView: React.FC<MenuViewProps> = ({
               </div>
 
               <div className="relative h-72 bg-cream-dark">
-                <img src={selectedItem.image} alt={selectedItem.name[language]} className="w-full h-full object-cover" />
+                <img src={selectedItem.image} alt={(selectedItem.name[language] ?? selectedItem.name.en)} className="w-full h-full object-cover" />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent" />
                 <div className="absolute top-3 left-3 flex flex-wrap gap-1">
                   {getBadges(selectedItem).map((b) => (
@@ -312,7 +313,7 @@ export const MenuView: React.FC<MenuViewProps> = ({
                   ))}
                 </div>
                 <div className="absolute bottom-3 left-3 right-3 flex justify-between items-end">
-                  <h2 className="text-xl font-bold text-white drop-shadow-md">{selectedItem.name[language]}</h2>
+                  <h2 className="text-xl font-bold text-white drop-shadow-md">{(selectedItem.name[language] ?? selectedItem.name.en)}</h2>
                   <div className="flex items-center gap-1 bg-white/90 backdrop-blur-sm px-2.5 py-1 rounded-full shadow-sm">
                     <Star size={12} className="text-gold fill-gold" />
                     <span className="text-xs font-bold text-gold">{selectedItem.rating}</span>
@@ -329,13 +330,13 @@ export const MenuView: React.FC<MenuViewProps> = ({
                     <ARView 
                       glbSrc={selectedItem.arModel.glb} 
                       usdzSrc={selectedItem.arModel.usdz} 
-                      alt={selectedItem.name[language]} 
+                      alt={(selectedItem.name[language] ?? selectedItem.name.en)} 
                       poster={selectedItem.image}
                     />
                   </div>
                 )}
 
-                <p className="text-sm text-muted/70 leading-relaxed mb-5">{selectedItem.description[language]}</p>
+                <p className="text-sm text-muted/70 leading-relaxed mb-5">{(selectedItem.description[language] ?? selectedItem.description.en)}</p>
 
                 <div className="flex items-center gap-4 mb-5 p-3.5 bg-cream-dark rounded-[14px]">
                   <div className="flex-1 text-center">
@@ -359,19 +360,19 @@ export const MenuView: React.FC<MenuViewProps> = ({
                     <UtensilsCrossed size={12} className="text-gold" /> {t.ingredients}
                   </h4>
                   <div className="flex flex-wrap gap-1.5">
-                    {selectedItem.ingredients[language].map((ing, idx) => (
+                    {(selectedItem.ingredients[language] ?? selectedItem.ingredients.en).map((ing, idx) => (
                       <span key={idx} className="text-[11px] text-muted bg-cream-dark px-2.5 py-1 rounded-full">{ing}</span>
                     ))}
                   </div>
                 </div>
 
-                {selectedItem.allergens[language].filter((a) => a.toLowerCase() !== "none").length > 0 && (
+                {(selectedItem.allergens[language] ?? selectedItem.allergens.en).filter((a) => a.toLowerCase() !== "none").length > 0 && (
                   <div>
                     <h4 className="text-[10px] font-bold text-black uppercase tracking-wider mb-2.5 flex items-center gap-1.5">
                       <Shield size={12} className="text-gold" /> {t.allergens}
                     </h4>
                     <div className="flex flex-wrap gap-1.5">
-                      {selectedItem.allergens[language].filter((a) => a.toLowerCase() !== "none").map((a, idx) => (
+                      {(selectedItem.allergens[language] ?? selectedItem.allergens.en).filter((a) => a.toLowerCase() !== "none").map((a, idx) => (
                         <span key={idx} className="text-[11px] text-[#C0392B] bg-red-50 px-2.5 py-1 rounded-full border border-red-100">{a}</span>
                       ))}
                     </div>

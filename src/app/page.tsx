@@ -17,6 +17,7 @@ const LANGUAGES: { code: Language; label: string }[] = [
   { code: "en", label: "English" },
   { code: "am", label: "አማርኛ" },
   { code: "or", label: "Afaan Oromoo" },
+  { code: "zh", label: "中文" },
 ];
 
 const CATEGORIES = [
@@ -152,8 +153,8 @@ export default function Home() {
       if (!searchQuery) return true;
       const q = searchQuery.toLowerCase();
       return (
-        item.name[language].toLowerCase().includes(q) ||
-        item.description[language].toLowerCase().includes(q)
+        (item.name[language] ?? item.name.en).toLowerCase().includes(q) ||
+        (item.description[language] ?? item.description.en).toLowerCase().includes(q)
       );
     });
   }, [category, drinkSub, fastingFilter, searchQuery, language, items]);
@@ -302,13 +303,13 @@ export default function Home() {
         {searchQuery && (
           <div className="px-5 py-5 space-y-2 bg-cream-dark/40 min-h-[50dvh]">
             <p className="text-xs font-heading text-muted/50 uppercase tracking-[0.2em] mb-4">{t.searchResults}</p>
-            {items.filter((it) => it.is_available && (it.name[language].toLowerCase().includes(searchQuery.toLowerCase()) || it.description[language].toLowerCase().includes(searchQuery.toLowerCase()))).map((it) => (
+            {items.filter((it) => it.is_available && ((it.name[language] ?? it.name.en).toLowerCase().includes(searchQuery.toLowerCase()) || (it.description[language] ?? it.description.en).toLowerCase().includes(searchQuery.toLowerCase()))).map((it) => (
               <button key={it.id} onClick={() => setSelectedItem(it)} className="w-full text-left py-3 px-4 rounded-xl bg-white/80 hover:bg-white transition-colors flex items-center gap-3 border border-border-warm/40">
-                <span className="text-base text-black flex-1 truncate">{it.name[language]}</span>
+                <span className="text-base text-black flex-1 truncate">{(it.name[language] ?? it.name.en)}</span>
                 <span className="text-sm text-gold font-semibold">{it.price}</span>
               </button>
             ))}
-            {items.filter((it) => it.is_available && (it.name[language].toLowerCase().includes(searchQuery.toLowerCase()) || it.description[language].toLowerCase().includes(searchQuery.toLowerCase()))).length === 0 && (
+            {items.filter((it) => it.is_available && ((it.name[language] ?? it.name.en).toLowerCase().includes(searchQuery.toLowerCase()) || (it.description[language] ?? it.description.en).toLowerCase().includes(searchQuery.toLowerCase()))).length === 0 && (
               <p className="text-base text-muted/50 text-center py-8">{t.noResults}</p>
             )}
           </div>
@@ -419,7 +420,7 @@ export default function Home() {
                   <button onClick={() => setSelectedItem(null)} className="ml-auto w-8 h-8 flex items-center justify-center text-muted/50 hover:text-black bg-cream-dark rounded-full transition-colors"><X size={18} /></button>
                 </div>
                 <div className="relative h-80 bg-cream-dark mx-5 mt-4 rounded-xl overflow-hidden border border-border-warm">
-                  <img src={selectedItem.image} alt={selectedItem.name[language]} className="w-full h-full object-cover" />
+                  <img src={selectedItem.image} alt={(selectedItem.name[language] ?? selectedItem.name.en)} className="w-full h-full object-cover" />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent" />
                 </div>
                 <div className="p-5">
@@ -431,31 +432,31 @@ export default function Home() {
                       <ARView 
                         glbSrc={selectedItem.arModel.glb} 
                         usdzSrc={selectedItem.arModel.usdz} 
-                        alt={selectedItem.name[language]} 
+                        alt={(selectedItem.name[language] ?? selectedItem.name.en)} 
                         poster={selectedItem.image}
                       />
                     </div>
                   )}
-                  <h2 className="text-2xl font-item text-black font-semibold tracking-wide">{selectedItem.name[language]}</h2>
-                  <p className="text-base text-black/70 leading-relaxed mt-3">{selectedItem.description[language]}</p>
+                  <h2 className="text-2xl font-item text-black font-semibold tracking-wide">{(selectedItem.name[language] ?? selectedItem.name.en)}</h2>
+                  <p className="text-base text-black/70 leading-relaxed mt-3">{(selectedItem.description[language] ?? selectedItem.description.en)}</p>
                   <div className="mt-6 pt-4 border-t border-border-warm">
                     <span className="text-xl font-price text-gold font-semibold">{selectedItem.price} <span className="text-sm font-normal text-muted/50">{t.birr}</span></span>
                   </div>
                   <div className="mt-6">
                     <h4 className="text-xs font-heading text-gold uppercase tracking-[0.15em] mb-3 font-semibold">{t.ingredients}</h4>
                     <div className="flex flex-wrap gap-2">
-                      {selectedItem.ingredients[language].map((ing, idx) => (
+                      {(selectedItem.ingredients[language] ?? selectedItem.ingredients.en).map((ing, idx) => (
                         <span key={idx} className="text-sm text-black/70 bg-cream-dark px-3 py-1.5 rounded-full border border-border-warm">{ing}</span>
                       ))}
                     </div>
                   </div>
-                  {selectedItem.allergens[language].filter((a) => a.toLowerCase() !== "none").length > 0 && (
+                  {(selectedItem.allergens[language] ?? selectedItem.allergens.en).filter((a) => a.toLowerCase() !== "none").length > 0 && (
                     <div className="mt-5">
                       <h4 className="text-xs font-heading text-gold uppercase tracking-[0.15em] mb-3 flex items-center gap-1.5 font-semibold">
                         <Shield size={14} /> {t.allergens}
                       </h4>
                       <div className="flex flex-wrap gap-2">
-                        {selectedItem.allergens[language].filter((a) => a.toLowerCase() !== "none").map((a, idx) => (
+                        {(selectedItem.allergens[language] ?? selectedItem.allergens.en).filter((a) => a.toLowerCase() !== "none").map((a, idx) => (
                           <span key={idx} className="text-sm text-[#C0392B] bg-red-50/80 px-3 py-1.5 rounded-full border border-red-200">{a}</span>
                         ))}
                       </div>
@@ -572,10 +573,10 @@ export default function Home() {
                         {cart.items.map((ci) => (
                           <div key={ci.item.id} className="flex items-center gap-3 bg-cream-dark/50 rounded-xl p-3 border border-border-warm/60">
                             <div className="w-14 h-14 rounded-xl overflow-hidden bg-cream-dark flex-shrink-0 border border-border-warm/40">
-                              <img src={ci.item.image} alt={ci.item.name[language]} className="w-full h-full object-cover" />
+                              <img src={ci.item.image} alt={(ci.item.name[language] ?? ci.item.name.en)} className="w-full h-full object-cover" />
                             </div>
                             <div className="flex-1 min-w-0">
-                              <p className="text-base font-medium text-black truncate">{ci.item.name[language]}</p>
+                              <p className="text-base font-medium text-black truncate">{(ci.item.name[language] ?? ci.item.name.en)}</p>
                               <p className="text-sm text-muted/50">{ci.item.price} ETB each</p>
                             </div>
                             <div className="flex items-center gap-2">
@@ -649,13 +650,13 @@ function MenuItemRow({ item, language, t, reviews, onClick, delay, onAddToCart }
         <div className="flex gap-3">
           <div className="flex-1 min-w-0">
             <div className="flex items-baseline justify-between gap-2">
-              <h3 className="text-lg md:text-xl font-item text-black font-semibold leading-tight group-hover:text-gold transition-colors tracking-wide">{item.name[language]}</h3>
+              <h3 className="text-lg md:text-xl font-item text-black font-semibold leading-tight group-hover:text-gold transition-colors tracking-wide">{(item.name[language] ?? item.name.en)}</h3>
               <span className="text-base md:text-lg font-price text-gold font-semibold flex-shrink-0">{item.price} <span className="text-xs font-normal text-muted/50">{t.birr}</span></span>
             </div>
             {item.isFasting && (
               <span className="inline-block text-[10px] font-heading text-muted/50 tracking-wider uppercase mt-0.5">{t.fasting}</span>
             )}
-            <p className="text-sm md:text-base text-black/70 mt-1 leading-relaxed line-clamp-2">{item.description[language]}</p>
+            <p className="text-sm md:text-base text-black/70 mt-1 leading-relaxed line-clamp-2">{(item.description[language] ?? item.description.en)}</p>
             {itemReviews.length > 0 && (
               <div className="flex items-center gap-1.5 mt-1.5">
                 <div className="flex items-center gap-[1px]">
@@ -669,7 +670,7 @@ function MenuItemRow({ item, language, t, reviews, onClick, delay, onAddToCart }
           </div>
           <div className="flex flex-col gap-2">
             <div className="w-20 h-20 md:w-24 md:h-24 flex-shrink-0 rounded-xl overflow-hidden bg-cream-dark border border-border-warm/60 opacity-80 group-hover:opacity-100 transition-all duration-300 group-hover:border-gold/30 group-hover:shadow-[0_0_12px_rgba(192,128,16,0.1)] relative">
-              <img src={item.image} alt={item.name[language]} className="w-full h-full object-cover" loading="lazy" />
+              <img src={item.image} alt={(item.name[language] ?? item.name.en)} className="w-full h-full object-cover" loading="lazy" />
               {item.arModel && (
                 <div className="absolute top-1 right-1 bg-gold text-white text-[8px] font-bold px-1.5 py-0.5 rounded-sm flex items-center gap-0.5 shadow-sm">
                   <View size={7} /> 3D

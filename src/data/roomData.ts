@@ -3,8 +3,8 @@ import { Language } from "./translations";
 export interface Room {
   id: string;
   type: 'standardRoom' | 'twinBed' | 'vipSuite';
-  name: Record<Language, string>;
-  description: Record<Language, string>;
+  name: Record<'en' | 'am' | 'or', string> & Partial<Record<'zh', string>>;
+  description: Record<'en' | 'am' | 'or', string> & Partial<Record<'zh', string>>;
   images: string[];
   amenities: string[];
   rating: number;

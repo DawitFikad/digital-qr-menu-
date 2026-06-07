@@ -1,8 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useRef, memo, useCallback } from 'react';
-import { AlertTriangle, Loader2, Smartphone, RefreshCw } from 'lucide-react';
-import { cacheAsset } from '@/lib/cache';
+import { AlertTriangle, Loader2, Smartphone, RefreshCw, BarChart3 } from 'lucide-react';
 
 interface ARViewProps {
   glbSrc: string;
@@ -17,106 +16,169 @@ export const ARView: React.FC<ARViewProps> = memo(({ glbSrc, usdzSrc, poster, al
   const [isClient, setIsClient] = useState(false);
   const [isIOS, setIsIOS] = useState(false);
   const [isAndroid, setIsAndroid] = useState(false);
-  const [modelReady, setModelReady] = useState(false);
+  const [progress, setProgress] = useState(0);
+  const [showModelViewer, setShowModelViewer] = useState(false);
   const modelRef = useRef<any>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const retryCount = useRef(0);
+  const preloaded = useRef(false);
 
+  // Detect platform & preload models on mount
   useEffect(() => {
     setIsClient(true);
-    if (typeof window !== 'undefined') {
-      const iosCheck = /iPad|iPhone|iPod/.test(navigator.userAgent);
-      const androidCheck = /Android/.test(navigator.userAgent);
-      setIsIOS(iosCheck);
-      setIsAndroid(androidCheck);
+    const ios = /iPad|iPhone|iPod/.test(navigator.userAgent);
+    const android = /Android/.test(navigator.userAgent);
+    setIsIOS(ios);
+    setIsAndroid(android);
+
+    // On mobile, prefer native AR — skip model-viewer entirely
+    if (ios || android) {
+      setShowModelViewer(false);
+      return;
     }
 
-    // Start caching the model files immediately
-    cacheAsset(glbSrc);
-    cacheAsset(usdzSrc);
+    // Desktop: preload model in background and show model-viewer
+    const preload = async () => {
+      try {
+        await fetch(glbSrc, { cache: 'force-cache' });
+        preloaded.current = true;
+      } catch {}
+    };
+    preload();
+    setShowModelViewer(true);
   }, [glbSrc, usdzSrc]);
 
-  useEffect(() => {
-    if (!isClient) return;
+  // On mobile, show native AR button immediately — no model-viewer overhead
+  if (!isClient) return null;
 
+  const absoluteUrl = (path: string) => {
+    if (path.startsWith('http')) return path;
+    return window.location.origin + path;
+  };
+
+  // iOS Quick Look — instant, no loading
+  if (isIOS) {
+    return (
+      <div ref={containerRef} className="relative w-full h-[400px] md:h-[450px] bg-cream-dark rounded-xl overflow-hidden shadow-inner group">
+        {poster ? (
+          <img src={poster} alt={alt} className="w-full h-full object-cover" />
+        ) : (
+          <div className="w-full h-full flex items-center justify-center">
+            <Smartphone size={48} className="text-gold/30" />
+          </div>
+        )}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
+        <div className="absolute bottom-0 left-0 right-0 p-5 text-center">
+          <p className="text-white/80 text-sm mb-3 font-medium">Tap to view in AR</p>
+          <a
+            href={absoluteUrl(usdzSrc)}
+            rel="ar"
+            className="inline-flex items-center gap-2.5 bg-gradient-to-r from-gold to-gold-light text-white px-8 py-3.5 rounded-full shadow-2xl hover:from-brown-dark hover:to-brown-dark transition-all transform active:scale-95 font-bold text-base ring-4 ring-white/30"
+          >
+            <Smartphone size={20} />
+            VIEW IN AR
+          </a>
+        </div>
+      </div>
+    );
+  }
+
+  // Android Scene Viewer — instant, no loading
+  if (isAndroid) {
+    const sceneViewerUrl = `https://arvr.google.com/scene-viewer/1.0?file=${encodeURIComponent(absoluteUrl(glbSrc))}&mode=ar_only`;
+    return (
+      <div ref={containerRef} className="relative w-full h-[400px] md:h-[450px] bg-cream-dark rounded-xl overflow-hidden shadow-inner group">
+        {poster ? (
+          <img src={poster} alt={alt} className="w-full h-full object-cover" />
+        ) : (
+          <div className="w-full h-full flex items-center justify-center">
+            <Smartphone size={48} className="text-gold/30" />
+          </div>
+        )}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
+        <div className="absolute bottom-0 left-0 right-0 p-5 text-center">
+          <p className="text-white/80 text-sm mb-3 font-medium">Tap to view in AR</p>
+          <a
+            href={sceneViewerUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-2.5 bg-gradient-to-r from-gold to-gold-light text-white px-8 py-3.5 rounded-full shadow-2xl hover:from-brown-dark hover:to-brown-dark transition-all transform active:scale-95 font-bold text-base ring-4 ring-white/30"
+          >
+            <Smartphone size={20} />
+            VIEW IN AR
+          </a>
+        </div>
+      </div>
+    );
+  }
+
+  // Desktop: model-viewer with progressive loading
+  useEffect(() => {
+    if (!showModelViewer) return;
     let mounted = true;
-    const checkModelViewer = () => {
+    const check = () => {
       if (typeof customElements !== 'undefined' && customElements.get('model-viewer')) {
-        if (mounted) setModelReady(true);
-        return true;
+        if (mounted) return true;
       }
       return false;
     };
-
-    if (checkModelViewer()) return;
-
+    if (check()) return;
     const interval = setInterval(() => {
-      if (checkModelViewer()) clearInterval(interval);
+      if (check()) clearInterval(interval);
     }, 200);
-
     const timeout = setTimeout(() => {
       clearInterval(interval);
       if (mounted) {
         setState('error');
         setErrorMsg('3D viewer failed to load. Please refresh the page.');
       }
-    }, 15000);
-
+    }, 10000);
     return () => { mounted = false; clearInterval(interval); clearTimeout(timeout); };
-  }, [isClient]);
+  }, [showModelViewer]);
 
   useEffect(() => {
-    if (!modelReady || !modelRef.current) return;
-
-    const modelViewer = modelRef.current;
+    if (!showModelViewer || !modelRef.current) return;
+    const mv = modelRef.current;
     let mounted = true;
 
-    const handleLoad = () => {
-      if (mounted) {
-        setState('ready');
+    const onProgress = (e: any) => {
+      if (mounted && e.detail && typeof e.detail.totalProgress === 'number') {
+        setProgress(Math.round(e.detail.totalProgress * 100));
       }
     };
+    const onLoad = () => { if (mounted) { setState('ready'); setProgress(100); } };
+    const onError = () => { if (mounted) { setState('error'); setErrorMsg('Failed to load 3D model.'); } };
 
-    const handleError = (e: any) => {
-      if (mounted) {
-        setState('error');
-        setErrorMsg('Failed to load 3D model. The file may be large.');
-      }
-    };
+    mv.addEventListener('progress', onProgress);
+    mv.addEventListener('load', onLoad);
+    mv.addEventListener('error', onError);
 
-    modelViewer.addEventListener('load', handleLoad);
-    modelViewer.addEventListener('error', handleError);
+    if (mv.loaded) { setState('ready'); setProgress(100); }
 
-    if (modelViewer.loaded) {
-      setState('ready');
-    } else {
-      const t = setTimeout(() => {
-        if (mounted && state === 'loading') {
-          setState('error');
-          setErrorMsg('Model is taking too long to load.');
-        }
-      }, 30000);
-      return () => { mounted = false; clearTimeout(t); modelViewer.removeEventListener('load', handleLoad); modelViewer.removeEventListener('error', handleError); };
-    }
-
-    return () => { mounted = false; modelViewer.removeEventListener('load', handleLoad); modelViewer.removeEventListener('error', handleError); };
-  }, [modelReady, glbSrc]);
+    return () => { mounted = false; mv.removeEventListener('progress', onProgress); mv.removeEventListener('load', onLoad); mv.removeEventListener('error', onError); };
+  }, [showModelViewer, glbSrc]);
 
   const handleRetry = useCallback(() => {
     retryCount.current += 1;
     setState('loading');
+    setProgress(0);
     setErrorMsg(null);
   }, []);
-
-  if (!isClient) return null;
 
   return (
     <div ref={containerRef} className="relative w-full h-[400px] md:h-[450px] bg-cream-dark rounded-xl overflow-hidden shadow-inner group">
       {state === 'loading' && (
-        <div className="absolute inset-0 flex flex-col items-center justify-center bg-cream-dark z-10">
+        <div className="absolute inset-0 flex flex-col items-center justify-center bg-cream-dark z-10 px-6">
           <Loader2 className="w-10 h-10 text-gold animate-spin mb-3" />
           <p className="text-sm text-muted font-medium">Loading 3D Model...</p>
-          <p className="text-xs text-muted/40 mt-1">This may take a moment for large files</p>
+          {progress > 0 && (
+            <div className="w-full max-w-[200px] mt-3">
+              <div className="h-1.5 bg-border-warm rounded-full overflow-hidden">
+                <div className="h-full bg-gold rounded-full transition-all duration-300" style={{ width: `${progress}%` }} />
+              </div>
+              <p className="text-xs text-muted/40 mt-1 text-center">{progress}%</p>
+            </div>
+          )}
         </div>
       )}
 
@@ -133,7 +195,7 @@ export const ARView: React.FC<ARViewProps> = memo(({ glbSrc, usdzSrc, poster, al
         </div>
       ) : (
         <>
-          {modelReady && (
+          {showModelViewer && (
             <model-viewer
               key={`${glbSrc}-${retryCount.current}`}
               ref={modelRef}
@@ -148,43 +210,24 @@ export const ARView: React.FC<ARViewProps> = memo(({ glbSrc, usdzSrc, poster, al
               auto-rotate
               shadow-intensity="1"
               exposure="1"
-              loading="eager"
+              reveal="auto"
+              loading="lazy"
               touch-action="pan-y"
               style={{ width: '100%', height: '100%', display: 'block', minHeight: '400px' }}
             >
               <div className="absolute top-4 left-4 bg-black/40 backdrop-blur-md px-3 py-1.5 rounded-full pointer-events-none">
-                <p className="text-xs text-white font-bold tracking-wider uppercase">3D Model</p>
+                <p className="text-xs text-white font-bold tracking-wider uppercase">3D Preview</p>
               </div>
             </model-viewer>
           )}
 
-          {isIOS && (
-            <a
-              href={usdzSrc}
-              rel="ar"
-              className="absolute bottom-5 left-1/2 -translate-x-1/2 bg-gradient-to-r from-gold to-gold-light text-white px-8 py-3.5 rounded-full flex items-center gap-2.5 shadow-2xl hover:from-brown-dark hover:to-brown-dark transition-all transform active:scale-95 z-30 font-bold text-base ring-4 ring-white/30"
-            >
-              <Smartphone size={20} />
-              VIEW IN AR
-            </a>
-          )}
-
-          {!isIOS && isAndroid && (
-            <button
-              slot="ar-button"
-              className="absolute bottom-5 left-1/2 -translate-x-1/2 bg-gradient-to-r from-gold to-gold-light text-white px-8 py-3.5 rounded-full flex items-center gap-2.5 shadow-2xl hover:from-brown-dark hover:to-brown-dark transition-all transform active:scale-95 z-30 font-bold text-base ring-4 ring-white/30"
-            >
-              <Smartphone size={20} />
-              VIEW IN AR
-            </button>
-          )}
-
-          {!isIOS && !isAndroid && (
-            <div className="absolute bottom-5 right-5 bg-black/60 backdrop-blur-md px-4 py-2.5 rounded-xl z-20">
-              <p className="text-xs text-white font-medium flex items-center gap-1.5">
-                <Smartphone size={14} />
-                Open on mobile for AR
-              </p>
+          {!showModelViewer && (
+            <div className="absolute inset-0 flex items-center justify-center bg-cream-dark">
+              <div className="text-center px-6">
+                <Smartphone size={48} className="text-gold/30 mx-auto mb-3" />
+                <p className="text-sm text-muted font-medium mb-1">AR available on mobile</p>
+                <p className="text-xs text-muted/40">Open this page on your phone</p>
+              </div>
             </div>
           )}
         </>

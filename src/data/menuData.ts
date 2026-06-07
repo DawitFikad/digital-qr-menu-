@@ -4,9 +4,9 @@ export interface MenuItem {
   id: string;
   category: 'breakfast' | 'lunch' | 'drinks';
   subcategory?: 'hot' | 'cold' | 'alcoholic';
-  name: Record<Language, string>;
-  description: Record<Language, string>;
-  ingredients: Record<Language, string[]>;
+  name: Record<'en' | 'am' | 'or', string> & Partial<Record<'zh', string>>;
+  description: Record<'en' | 'am' | 'or', string> & Partial<Record<'zh', string>>;
+  ingredients: Record<'en' | 'am' | 'or', string[]> & Partial<Record<'zh', string[]>>;
   price: number;
   calories: number;
   prep_time: string;
@@ -17,7 +17,7 @@ export interface MenuItem {
   is_new: boolean;
   is_spicy: boolean;
   is_available: boolean;
-  allergens: Record<Language, string[]>;
+  allergens: Record<'en' | 'am' | 'or', string[]> & Partial<Record<'zh', string[]>>;
   isFasting?: boolean;
   arModel?: {
     glb: string;

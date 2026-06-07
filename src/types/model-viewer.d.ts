@@ -28,6 +28,7 @@ interface ModelViewerAttributes extends React.DetailedHTMLProps<React.HTMLAttrib
   'shadow-intensity'?: string;
   exposure?: string;
   loading?: string;
+  reveal?: string;
   'touch-action'?: string;
 }
 
