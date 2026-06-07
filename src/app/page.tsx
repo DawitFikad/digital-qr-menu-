@@ -8,7 +8,7 @@ import { menuItems as defaultMenuItems, MenuItem } from "@/data/menuData";
 import { Language } from "@/data/translations";
 import { cn } from "@/lib/utils";
 import {
-  Search, X, Menu, Globe, ChevronDown, Star, ShoppingCart, Plus, Minus, Trash2, View, Shield,
+  Search, X, Menu, Globe, ChevronDown, Star, ShoppingCart, Plus, Minus, Trash2, View, Shield, Smartphone,
 } from "lucide-react";
 import { ARView } from "@/components/ARView";
 import { preloadARModels, cacheAllImages } from "@/lib/cache";
@@ -104,20 +104,36 @@ export default function Home() {
         localStorage.setItem("menu_items", JSON.stringify(full));
       }
     }).catch(() => {});
-    fetch("/api/reviews").then((r) => r.json()).then((apiReviews) => {
+    fetch("/.netlify/functions/reviews").then((r) => r.json()).then((apiReviews) => {
       if (apiReviews && apiReviews.length > 0) {
         setReviews(apiReviews);
         localStorage.setItem("menu_reviews", JSON.stringify(apiReviews));
       }
     }).catch(() => {});
 
-    // Preload AR models and cache external images in background
-    setTimeout(() => {
-      const arModels = defaultMenuItems.filter(i => i.arModel).map(i => i.arModel!);
-      if (arModels.length > 0) preloadARModels(arModels);
-      const extImages = defaultMenuItems.filter(i => i.image.startsWith('http')).map(i => i.image);
-      if (extImages.length > 0) cacheAllImages(extImages);
-    }, 3000);
+    // Preload AR models and cache external images
+    const arModels = defaultMenuItems.filter(i => i.arModel).map(i => i.arModel!);
+    if (arModels.length > 0) {
+      preloadARModels(arModels);
+      arModels.forEach(m => {
+        const link = document.createElement('link');
+        link.rel = 'preload'; link.as = 'fetch'; link.href = m.glb; link.crossOrigin = 'anonymous';
+        document.head.appendChild(link);
+        const link2 = document.createElement('link');
+        link2.rel = 'preload'; link2.as = 'fetch'; link2.href = m.usdz; link2.crossOrigin = 'anonymous';
+        document.head.appendChild(link2);
+      });
+    }
+    const extImages = defaultMenuItems.filter(i => i.image.startsWith('http')).map(i => i.image);
+    if (extImages.length > 0) cacheAllImages(extImages);
+    // Preload local food images (first few for faster LCP)
+    defaultMenuItems.slice(0, 8).forEach(i => {
+      if (!i.image.startsWith('http')) {
+        const link = document.createElement('link');
+        link.rel = 'preload'; link.as = 'image'; link.href = i.image;
+        document.head.appendChild(link);
+      }
+    });
   }, []);
 
   useEffect(() => {
@@ -196,7 +212,9 @@ export default function Home() {
             <div className="gold-flourish mb-4">
               <div className="gold-diamond" />
             </div>
-            <h1 className="text-5xl md:text-6xl font-logo text-black drop-shadow-[0_1px_2px_rgba(192,128,16,0.2)]">{t.welcome}</h1>
+            <img src="/images/logop.png" alt="Paramount Cafe &amp; Pizzeria" className="h-20 md:h-24 mx-auto mb-3 object-contain" loading="eager" />
+            <h1 className="text-2xl md:text-3xl font-logo text-black">{t.welcome} to</h1>
+            <p className="text-2xl md:text-3xl font-logo text-gold mt-1">Paramount Cafe &amp; Pizzeria</p>
             <p className="text-xs md:text-sm font-heading text-muted tracking-[0.3em] uppercase mt-2">{t.tagline}</p>
             <div className="tibeb-divider mt-5">
               <div className="tibeb-cross">
@@ -352,10 +370,12 @@ export default function Home() {
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-50 bg-black/50" onClick={() => setShowSidebar(false)}>
               <motion.div initial={{ x: -300 }} animate={{ x: 0 }} exit={{ x: -300 }} transition={{ type: "spring", damping: 28, stiffness: 300 }} className="absolute top-0 left-0 bottom-0 w-[300px] max-w-[80vw] wood-sidebar border-r border-white/5 shadow-2xl overflow-y-auto" onClick={(e) => e.stopPropagation()}>
                 <div className="p-8">
-                  <div className="flex items-center justify-between mb-8">
-                    <h2 className="text-2xl font-logo text-white">{t.welcome}</h2>
-                    <button onClick={() => setShowSidebar(false)} className="w-8 h-8 flex items-center justify-center text-white/50 hover:text-white transition-colors"><X size={20} /></button>
+                  <div className="flex items-start justify-between mb-1">
+                    <img src="/images/logop.png" alt="Paramount Cafe &amp; Pizzeria" className="h-12 md:h-14 object-contain" loading="eager" />
+                    <button onClick={() => setShowSidebar(false)} className="w-8 h-8 flex items-center justify-center text-white/50 hover:text-white transition-colors shrink-0"><X size={20} /></button>
                   </div>
+                  <h2 className="text-lg font-logo text-white">{t.welcome} to</h2>
+                  <p className="text-xl font-logo text-gold mt-0.5 mb-4">Paramount Cafe &amp; Pizzeria</p>
                   <p className="text-xs font-heading text-white/50 mb-7 leading-relaxed tracking-[0.15em] uppercase">{t.subtitle}</p>
                   <div className="space-y-1">
                     {CATEGORIES.map((cat) => (
@@ -508,7 +528,7 @@ export default function Home() {
                           const updated = [...reviews, newReview];
                           setReviews(updated);
                           localStorage.setItem("menu_reviews", JSON.stringify(updated));
-                          fetch("/api/reviews", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(newReview) }).catch(() => {});
+                          fetch("/.netlify/functions/reviews", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(newReview) }).catch(() => {});
                           setReviewForm({ author: "", rating: 5, comment: "" });
                         }}
                         className="w-full py-2.5 text-xs tracking-wider uppercase bg-gold/15 hover:bg-gold/25 text-gold font-semibold rounded-xl transition-colors border border-gold/20"
@@ -571,30 +591,33 @@ export default function Home() {
                     <>
                       <div className="space-y-3 mb-6">
                         {cart.items.map((ci) => (
-                          <div key={ci.item.id} className="flex items-center gap-3 bg-cream-dark/50 rounded-xl p-3 border border-border-warm/60">
-                            <div className="w-14 h-14 rounded-xl overflow-hidden bg-cream-dark flex-shrink-0 border border-border-warm/40">
-                              <img src={ci.item.image} alt={(ci.item.name[language] ?? ci.item.name.en)} className="w-full h-full object-cover" />
-                            </div>
-                            <div className="flex-1 min-w-0">
-                              <p className="text-base font-medium text-black truncate">{(ci.item.name[language] ?? ci.item.name.en)}</p>
-                              <p className="text-sm text-muted/50">{ci.item.price} ETB each</p>
-                            </div>
-                            <div className="flex items-center gap-2">
-                              <button onClick={() => cart.updateQuantity(ci.item.id, ci.quantity - 1)} className="w-8 h-8 rounded-full bg-white border border-border-warm flex items-center justify-center text-black/60 hover:text-black transition-colors">
-                                <Minus size={14} />
+                          <div key={ci.item.id} className="bg-cream-dark/50 rounded-xl p-3 border border-border-warm/60">
+                            <div className="flex items-center gap-3">
+                              <div className="w-12 h-12 md:w-14 md:h-14 rounded-xl overflow-hidden bg-cream-dark flex-shrink-0 border border-border-warm/40">
+                                <img src={ci.item.image} alt={(ci.item.name[language] ?? ci.item.name.en)} className="w-full h-full object-cover" />
+                              </div>
+                              <div className="flex-1 min-w-0">
+                                <p className="text-sm md:text-base font-medium text-black truncate">{(ci.item.name[language] ?? ci.item.name.en)}</p>
+                                <p className="text-xs md:text-sm text-muted/50">{ci.item.price} ETB each</p>
+                              </div>
+                              <div className="text-right flex-shrink-0">
+                                <p className="text-sm md:text-base font-bold text-black">{(ci.item.price * ci.quantity).toLocaleString()}</p>
+                                <p className="text-[9px] text-muted/40">ETB</p>
+                              </div>
+                              <button onClick={() => cart.removeItem(ci.item.id)} className="w-7 h-7 flex items-center justify-center text-muted/30 hover:text-[#C0392B] transition-colors flex-shrink-0">
+                                <Trash2 size={14} />
                               </button>
-                              <span className="w-8 text-center text-base font-semibold text-black">{ci.quantity}</span>
-                              <button onClick={() => cart.updateQuantity(ci.item.id, ci.quantity + 1)} className="w-8 h-8 rounded-full bg-white border border-border-warm flex items-center justify-center text-black/60 hover:text-black transition-colors">
-                                <Plus size={14} />
+                            </div>
+                            <div className="flex items-center justify-end gap-2 mt-2.5 pt-2 border-t border-border-warm/30">
+                              <span className="text-[10px] text-muted/40 uppercase tracking-wider mr-auto">Qty</span>
+                              <button onClick={() => cart.updateQuantity(ci.item.id, ci.quantity - 1)} className="w-7 h-7 md:w-8 md:h-8 rounded-full bg-white border border-border-warm flex items-center justify-center text-black/60 hover:text-black transition-colors">
+                                <Minus size={12} />
+                              </button>
+                              <span className="w-7 md:w-8 text-center text-sm md:text-base font-semibold text-black">{ci.quantity}</span>
+                              <button onClick={() => cart.updateQuantity(ci.item.id, ci.quantity + 1)} className="w-7 h-7 md:w-8 md:h-8 rounded-full bg-white border border-border-warm flex items-center justify-center text-black/60 hover:text-black transition-colors">
+                                <Plus size={12} />
                               </button>
                             </div>
-                            <div className="text-right min-w-[80px]">
-                              <p className="text-base font-bold text-black">{(ci.item.price * ci.quantity).toLocaleString()}</p>
-                              <p className="text-[10px] text-muted/40">ETB</p>
-                            </div>
-                            <button onClick={() => cart.removeItem(ci.item.id)} className="w-7 h-7 flex items-center justify-center text-muted/30 hover:text-[#C0392B] transition-colors">
-                              <Trash2 size={15} />
-                            </button>
                           </div>
                         ))}
                       </div>
@@ -672,8 +695,8 @@ function MenuItemRow({ item, language, t, reviews, onClick, delay, onAddToCart }
             <div className="w-20 h-20 md:w-24 md:h-24 flex-shrink-0 rounded-xl overflow-hidden bg-cream-dark border border-border-warm/60 opacity-80 group-hover:opacity-100 transition-all duration-300 group-hover:border-gold/30 group-hover:shadow-[0_0_12px_rgba(192,128,16,0.1)] relative">
               <img src={item.image} alt={(item.name[language] ?? item.name.en)} className="w-full h-full object-cover" loading="lazy" />
               {item.arModel && (
-                <div className="absolute top-1 right-1 bg-gold text-white text-[8px] font-bold px-1.5 py-0.5 rounded-sm flex items-center gap-0.5 shadow-sm">
-                  <View size={7} /> 3D
+                <div className="absolute top-1 right-1 bg-gold text-white text-[9px] font-bold px-2 py-1 rounded-md flex items-center gap-1 shadow-md z-10">
+                  <Smartphone size={10} /> 3D
                 </div>
               )}
             </div>

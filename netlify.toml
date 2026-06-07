@@ -12,3 +12,9 @@
     Access-Control-Allow-Origin = "*"
     Access-Control-Allow-Methods = "GET, POST, OPTIONS"
     Access-Control-Allow-Headers = "Content-Type, Authorization"
+
+[[headers]]
+  for = "*.usdz"
+  [headers.values]
+    Content-Type = "model/vnd.usdz+zip"
+    Content-Disposition = "inline"

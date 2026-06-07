@@ -8,7 +8,7 @@ import { Language } from "@/data/translations";
 import { cn } from "@/lib/utils";
 import {
   Search, X, Clock, Flame, Snowflake, Shield,
-  ChevronLeft, Star, Globe, UtensilsCrossed, View, ShoppingCart, Plus
+  ChevronLeft, Star, Globe, UtensilsCrossed, View, Smartphone, ShoppingCart, Plus
 } from "lucide-react";
 import Link from "next/link";
 import { ARView } from "./ARView";
@@ -88,12 +88,12 @@ export const MenuView: React.FC<MenuViewProps> = ({
       {/* HEADER */}
       <header className="sticky top-0 z-40 bg-cream/95 backdrop-blur-lg border-b border-border-warm">
         <div className="flex items-center justify-between px-4 h-14">
-          <Link href="/" className="w-10 h-10 flex items-center justify-center text-black">
-            <ChevronLeft size={22} />
+          <Link href="/" className="flex items-center gap-2">
+            <img src="/images/logop.png" alt="Elshaday" className="h-8 w-auto object-contain" />
+            <span className="text-[15px] font-bold text-gold tracking-tight hidden sm:inline">{title}</span>
           </Link>
           <div className="flex flex-col items-center absolute left-1/2 -translate-x-1/2">
-            <h1 className="text-[15px] font-bold text-gold tracking-tight">{title}</h1>
-            <p className="text-[9px] text-muted/60 tracking-wider uppercase -mt-0.5">{subtitle}</p>
+            <p className="text-[9px] text-muted/60 tracking-wider uppercase">{subtitle}</p>
           </div>
           <div className="flex items-center gap-1">
             <button onClick={() => setShowSearch(!showSearch)} className="w-10 h-10 flex items-center justify-center text-muted/70 hover:text-black">
@@ -233,8 +233,8 @@ export const MenuView: React.FC<MenuViewProps> = ({
                       </div>
                     )}
                     {item.arModel && (
-                      <div className="absolute top-1.5 right-1.5 bg-gold text-white text-[7px] font-bold px-1.5 py-0.5 rounded-sm flex items-center gap-1 shadow-sm">
-                        <View size={8} /> 3D AR
+                      <div className="absolute top-1.5 right-1.5 bg-gold text-white text-[9px] font-bold px-2 py-1 rounded-md flex items-center gap-1.5 shadow-md">
+                        <Smartphone size={11} /> AR
                       </div>
                     )}
                     {item.category === "drinks" && (

@@ -12,7 +12,7 @@
 
 const GITHUB_API = 'https://api.github.com';
 
-function respond(status, data) {
+function respond(status, data, extraHeaders = {}) {
   return new Response(JSON.stringify(data), {
     status,
     headers: {
@@ -20,7 +20,16 @@ function respond(status, data) {
       'Access-Control-Allow-Origin': '*',
       'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
       'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+      ...extraHeaders,
     },
+  });
+}
+
+function respondGET(data) {
+  return respond(200, data, {
+    'Cache-Control': 'no-cache, no-store, must-revalidate',
+    'Pragma': 'no-cache',
+    'Expires': '0',
   });
 }
 
@@ -116,7 +125,7 @@ export default async (req) => {
       if (!result.exists) {
         return respond(404, { error: 'menu.json not found in repository. Save from admin dashboard to create it.' });
       }
-      return respond(200, result.content);
+      return respondGET(result.content);
     }
 
     if (req.method === 'POST') {
