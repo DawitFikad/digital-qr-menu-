@@ -8,7 +8,7 @@ import { Language } from "@/data/translations";
 import { cn } from "@/lib/utils";
 import {
   Search, X, Clock, Flame, Snowflake, Shield,
-  ChevronLeft, Star, Globe, UtensilsCrossed, View
+  ChevronLeft, Star, Globe, UtensilsCrossed, View, ShoppingCart, Plus
 } from "lucide-react";
 import Link from "next/link";
 import { ARView } from "./ARView";
@@ -32,7 +32,7 @@ export const MenuView: React.FC<MenuViewProps> = ({
   categories,
   title,
   subtitle,
-  accentColor = "#D4A35F",
+  accentColor = "#C08010",
 }) => {
   const { language, setLanguage, t } = useLanguage();
   const [activeCategory, setActiveCategory] = useState("all");
@@ -71,7 +71,7 @@ export const MenuView: React.FC<MenuViewProps> = ({
   const getBadges = (item: MenuItem) => {
     const b: { label: string; cls: string }[] = [];
     if (item.is_best_seller) b.push({ label: t.bestSeller, cls: "bg-gold text-white" });
-    if (item.is_signature) b.push({ label: t.signature, cls: "bg-coffee-muted text-white" });
+    if (item.is_signature) b.push({ label: t.signature, cls: "bg-brown-dark text-white" });
     if (item.is_new) b.push({ label: t.newItem, cls: "bg-warm-brown text-white" });
     if (item.is_spicy) b.push({ label: t.spicy, cls: "bg-[#C0392B] text-white" });
     return b;
@@ -87,15 +87,15 @@ export const MenuView: React.FC<MenuViewProps> = ({
       {/* HEADER */}
       <header className="sticky top-0 z-40 bg-cream/95 backdrop-blur-lg border-b border-border-warm">
         <div className="flex items-center justify-between px-4 h-14">
-          <Link href="/" className="w-10 h-10 flex items-center justify-center text-coffee">
+          <Link href="/" className="w-10 h-10 flex items-center justify-center text-black">
             <ChevronLeft size={22} />
           </Link>
           <div className="flex flex-col items-center absolute left-1/2 -translate-x-1/2">
             <h1 className="text-[15px] font-bold text-gold tracking-tight">{title}</h1>
-            <p className="text-[9px] text-coffee-muted/60 tracking-wider uppercase -mt-0.5">{subtitle}</p>
+            <p className="text-[9px] text-muted/60 tracking-wider uppercase -mt-0.5">{subtitle}</p>
           </div>
           <div className="flex items-center gap-1">
-            <button onClick={() => setShowSearch(!showSearch)} className="w-10 h-10 flex items-center justify-center text-coffee-muted/70 hover:text-coffee">
+            <button onClick={() => setShowSearch(!showSearch)} className="w-10 h-10 flex items-center justify-center text-muted/70 hover:text-black">
               <Search size={20} />
             </button>
             <button onClick={() => setShowLangPicker(true)} className="w-10 h-10 flex items-center justify-center text-gold">
@@ -112,17 +112,17 @@ export const MenuView: React.FC<MenuViewProps> = ({
               className="overflow-hidden px-4 pb-3"
             >
               <div className="relative">
-                <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-coffee-muted/50" />
+                <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted/50" />
                 <input
                   ref={searchRef}
                   type="text"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder={t.search}
-                  className="w-full pl-9 pr-8 py-2.5 bg-white rounded-xl text-sm text-coffee placeholder-coffee-muted/40 border border-border-warm focus:outline-none focus:border-gold/50 transition-colors"
+                  className="w-full pl-9 pr-8 py-2.5 bg-white rounded-xl text-sm text-black placeholder-muted/40 border border-border-warm focus:outline-none focus:border-gold/50 transition-colors"
                 />
                 {searchQuery && (
-                  <button onClick={() => setSearchQuery("")} className="absolute right-3 top-1/2 -translate-y-1/2 text-coffee-muted/50">
+                  <button onClick={() => setSearchQuery("")} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted/50">
                     <X size={16} />
                   </button>
                 )}
@@ -137,7 +137,7 @@ export const MenuView: React.FC<MenuViewProps> = ({
         {showLangPicker && (
           <motion.div
             initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 bg-coffee/40 backdrop-blur-sm"
+            className="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm"
             onClick={() => setShowLangPicker(false)}
           >
             <motion.div
@@ -147,7 +147,7 @@ export const MenuView: React.FC<MenuViewProps> = ({
               onClick={(e) => e.stopPropagation()}
             >
               <div className="w-10 h-1 bg-border-warm rounded-full mx-auto mb-6" />
-              <h3 className="text-lg font-bold text-coffee text-center mb-6">{t.language}</h3>
+              <h3 className="text-lg font-bold text-black text-center mb-6">{t.language}</h3>
               {LANGUAGES.map((lang) => (
                 <button
                   key={lang.code}
@@ -156,7 +156,7 @@ export const MenuView: React.FC<MenuViewProps> = ({
                     "w-full py-4 px-4 rounded-2xl text-left mb-2 transition-all",
                     language === lang.code
                       ? "bg-gold text-white font-semibold"
-                      : "bg-cream-dark text-coffee-muted hover:bg-border-warm"
+                      : "bg-cream-dark text-muted hover:bg-border-warm"
                   )}
                 >
                   {lang.label}
@@ -179,7 +179,7 @@ export const MenuView: React.FC<MenuViewProps> = ({
                 "flex-shrink-0 px-5 py-2.5 rounded-full text-sm font-medium transition-all whitespace-nowrap flex items-center gap-1.5",
                 activeCategory === cat.id
                   ? "bg-gold text-white shadow-lg shadow-gold/20"
-                  : "bg-white text-coffee-muted hover:text-coffee border border-border-warm"
+                  : "bg-white text-muted hover:text-black border border-border-warm"
               )}
             >
               {cat.icon}
@@ -194,7 +194,7 @@ export const MenuView: React.FC<MenuViewProps> = ({
         {filteredItems.length === 0 && (
           <div className="text-center py-16">
             <Search size={40} className="mx-auto text-border-warm mb-4" />
-            <p className="text-coffee-muted/60 text-sm">{t.noItems}</p>
+            <p className="text-muted/60 text-sm">{t.noItems}</p>
             <button onClick={() => setSearchQuery("")} className="mt-3 text-gold text-sm font-medium">{t.clearSearch}</button>
           </div>
         )}
@@ -250,7 +250,7 @@ export const MenuView: React.FC<MenuViewProps> = ({
                   <div className="flex-1 p-3.5 min-w-0 flex flex-col justify-between">
                     <div>
                       <div className="flex items-start justify-between gap-2">
-                        <h3 className="text-sm font-bold text-coffee leading-tight line-clamp-1">
+                        <h3 className="text-sm font-bold text-black leading-tight line-clamp-1">
                           {item.name[language]}
                         </h3>
                         <div className="flex items-center gap-1 flex-shrink-0 bg-gold/10 px-1.5 py-0.5 rounded-full">
@@ -258,16 +258,16 @@ export const MenuView: React.FC<MenuViewProps> = ({
                           <span className="text-[9px] font-bold text-gold">{item.rating}</span>
                         </div>
                       </div>
-                      <p className="text-[11px] text-coffee-muted/60 mt-1 line-clamp-2 leading-relaxed">
+                      <p className="text-[11px] text-muted/60 mt-1 line-clamp-2 leading-relaxed">
                         {item.description[language]}
                       </p>
                     </div>
 
                     <div className="flex items-center justify-between mt-2 pt-2 border-t border-border-warm/50">
                       <span className="text-sm font-bold text-gold">
-                        {item.price} <span className="text-[10px] font-medium text-coffee-muted/50">{t.birr}</span>
+                        {item.price} <span className="text-[10px] font-medium text-muted/50">{t.birr}</span>
                       </span>
-                      <div className="flex items-center gap-2.5 text-[10px] text-coffee-muted/50">
+                      <div className="flex items-center gap-2.5 text-[10px] text-muted/50">
                         <span className="flex items-center gap-1">
                           <Clock size={9} /> {item.prep_time} {t.min}
                         </span>
@@ -287,7 +287,7 @@ export const MenuView: React.FC<MenuViewProps> = ({
         {selectedItem && (
           <motion.div
             initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 bg-coffee/50 backdrop-blur-sm"
+            className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm"
             onClick={() => setSelectedItem(null)}
           >
             <motion.div
@@ -298,7 +298,7 @@ export const MenuView: React.FC<MenuViewProps> = ({
             >
               <div className="sticky top-0 z-10 bg-white pt-3 pb-1 px-4 flex items-center justify-between">
                 <div className="w-10 h-1 bg-border-warm rounded-full mx-auto absolute left-1/2 -translate-x-1/2 top-2" />
-                <button onClick={() => setSelectedItem(null)} className="ml-auto w-8 h-8 flex items-center justify-center text-coffee-muted/50 bg-cream-dark rounded-full">
+                <button onClick={() => setSelectedItem(null)} className="ml-auto w-8 h-8 flex items-center justify-center text-muted/50 bg-cream-dark rounded-full">
                   <X size={18} />
                 </button>
               </div>
@@ -323,7 +323,7 @@ export const MenuView: React.FC<MenuViewProps> = ({
               <div className="p-5">
                 {selectedItem.arModel && (
                   <div className="mb-6">
-                    <h4 className="text-[10px] font-bold text-coffee uppercase tracking-wider mb-2.5 flex items-center gap-1.5">
+                    <h4 className="text-[10px] font-bold text-black uppercase tracking-wider mb-2.5 flex items-center gap-1.5">
                       <View size={12} className="text-gold" /> 3D AR Experience
                     </h4>
                     <ARView 
@@ -335,39 +335,39 @@ export const MenuView: React.FC<MenuViewProps> = ({
                   </div>
                 )}
 
-                <p className="text-sm text-coffee-muted/70 leading-relaxed mb-5">{selectedItem.description[language]}</p>
+                <p className="text-sm text-muted/70 leading-relaxed mb-5">{selectedItem.description[language]}</p>
 
                 <div className="flex items-center gap-4 mb-5 p-3.5 bg-cream-dark rounded-[14px]">
                   <div className="flex-1 text-center">
-                    <p className="text-[9px] text-coffee-muted/50 uppercase tracking-wider font-medium">{t.price}</p>
+                    <p className="text-[9px] text-muted/50 uppercase tracking-wider font-medium">{t.price}</p>
                     <p className="text-lg font-bold text-gold">{selectedItem.price} {t.birr}</p>
                   </div>
                   <div className="w-px h-10 bg-border-warm" />
                   <div className="flex-1 text-center">
-                    <p className="text-[9px] text-coffee-muted/50 uppercase tracking-wider font-medium">{t.calories}</p>
-                    <p className="text-sm font-bold text-coffee">{selectedItem.calories}</p>
+                    <p className="text-[9px] text-muted/50 uppercase tracking-wider font-medium">{t.calories}</p>
+                    <p className="text-sm font-bold text-black">{selectedItem.calories}</p>
                   </div>
                   <div className="w-px h-10 bg-border-warm" />
                   <div className="flex-1 text-center">
-                    <p className="text-[9px] text-coffee-muted/50 uppercase tracking-wider font-medium">{t.prepTime}</p>
-                    <p className="text-sm font-bold text-coffee">{selectedItem.prep_time} {t.min}</p>
+                    <p className="text-[9px] text-muted/50 uppercase tracking-wider font-medium">{t.prepTime}</p>
+                    <p className="text-sm font-bold text-black">{selectedItem.prep_time} {t.min}</p>
                   </div>
                 </div>
 
                 <div className="mb-5">
-                  <h4 className="text-[10px] font-bold text-coffee uppercase tracking-wider mb-2.5 flex items-center gap-1.5">
+                  <h4 className="text-[10px] font-bold text-black uppercase tracking-wider mb-2.5 flex items-center gap-1.5">
                     <UtensilsCrossed size={12} className="text-gold" /> {t.ingredients}
                   </h4>
                   <div className="flex flex-wrap gap-1.5">
                     {selectedItem.ingredients[language].map((ing, idx) => (
-                      <span key={idx} className="text-[11px] text-coffee-muted bg-cream-dark px-2.5 py-1 rounded-full">{ing}</span>
+                      <span key={idx} className="text-[11px] text-muted bg-cream-dark px-2.5 py-1 rounded-full">{ing}</span>
                     ))}
                   </div>
                 </div>
 
                 {selectedItem.allergens[language].filter((a) => a.toLowerCase() !== "none").length > 0 && (
                   <div>
-                    <h4 className="text-[10px] font-bold text-coffee uppercase tracking-wider mb-2.5 flex items-center gap-1.5">
+                    <h4 className="text-[10px] font-bold text-black uppercase tracking-wider mb-2.5 flex items-center gap-1.5">
                       <Shield size={12} className="text-gold" /> {t.allergens}
                     </h4>
                     <div className="flex flex-wrap gap-1.5">

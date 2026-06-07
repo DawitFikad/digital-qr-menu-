@@ -1,15 +1,18 @@
 @import "tailwindcss";
 
 @theme {
-  --color-cream: #FDF6EF;
-  --color-cream-dark: #F5F0EA;
-  --color-coffee: #2C1810;
-  --color-coffee-light: #4A2C22;
-  --color-coffee-muted: #6B4226;
-  --color-gold: #D4A35F;
-  --color-gold-light: #C89B3C;
+  --color-cream: #F8F6F3;
+  --color-cream-dark: #F0EDE8;
+  --color-black: #000000;
+  --color-dark: #1A0D06;
+  --color-brown-dark: #603010;
+  --color-brown: #804010;
+  --color-gold: #C08010;
+  --color-gold-light: #D4A040;
+  --color-gold-bright: #F0E000;
   --color-warm-brown: #8B6914;
-  --color-border-warm: #E8DCC8;
+  --color-border-warm: #E0D8D0;
+  --color-muted: #6B6B6B;
 
   --font-logo: 'Great Vibes', 'Allura', 'Alex Brush', cursive;
   --font-heading: 'Playfair Display', 'Cormorant Garamond', Georgia, serif;
@@ -25,11 +28,13 @@
   }
 
   body {
-    color: #2C1810;
+    color: #000000;
     font-family: 'Lato', 'Open Sans', sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     width: 100%;
+    font-size: 16px;
+    line-height: 1.6;
   }
 
   * {
@@ -44,7 +49,7 @@
 
 @layer utilities {
   .luxury-bg {
-    background-color: #3E2010;
+    background-color: #1A0D06;
     background-image:
       repeating-linear-gradient(
         90deg,
@@ -74,11 +79,11 @@
       ),
       repeating-linear-gradient(
         90deg,
-        #3E2010 0px,
-        #4A2814 160px,
-        #3A1C0E 320px,
-        #452412 480px,
-        #3E2010 640px
+        #1A0D06 0px,
+        #2A1810 160px,
+        #1A0D06 320px,
+        #2A1810 480px,
+        #1A0D06 640px
       );
     min-height: 100dvh;
     width: 100%;
@@ -96,15 +101,28 @@
 
   .app-container {
     width: 100%;
-    max-width: 480px;
+    max-width: 100%;
     margin: 0 auto;
     position: relative;
     min-height: 100dvh;
-    background: #FDF6EF;
-    border: 1px solid rgba(232, 220, 200, 0.3);
-    box-shadow: 0 0 80px rgba(0,0,0,0.5), 0 0 0 1px rgba(212, 163, 95, 0.08);
+    background: #FFFFFF;
+    box-shadow: 0 0 80px rgba(0,0,0,0.5);
     z-index: 1;
     box-sizing: border-box;
+  }
+
+  @media (min-width: 768px) {
+    .app-container {
+      max-width: 900px;
+      border-left: 1px solid rgba(192, 128, 16, 0.15);
+      border-right: 1px solid rgba(192, 128, 16, 0.15);
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .app-container {
+      max-width: 1000px;
+    }
   }
 
   .hide-scrollbar {
@@ -116,7 +134,6 @@
     display: none;
   }
 
-  /* Ethiopian Tibeb decorative divider */
   .tibeb-divider {
     display: flex;
     align-items: center;
@@ -130,7 +147,7 @@
     content: '';
     flex: 1;
     height: 1px;
-    background: linear-gradient(90deg, transparent, rgba(212, 163, 95, 0.4), transparent);
+    background: linear-gradient(90deg, transparent, rgba(192, 128, 16, 0.4), transparent);
   }
 
   .tibeb-cross {
@@ -146,7 +163,7 @@
   .tibeb-cross::after {
     content: '';
     position: absolute;
-    background: rgba(212, 163, 95, 0.5);
+    background: rgba(192, 128, 16, 0.5);
   }
 
   .tibeb-cross::before {
@@ -162,17 +179,16 @@
   .tibeb-cross-inner {
     width: 6px;
     height: 6px;
-    border: 1.5px solid rgba(212, 163, 95, 0.4);
+    border: 1.5px solid rgba(192, 128, 16, 0.4);
     transform: rotate(45deg);
     z-index: 1;
   }
 
-  /* Ethiopian border corner ornament */
   .tibeb-corner {
     position: absolute;
     width: 24px;
     height: 24px;
-    border-color: rgba(212, 163, 95, 0.25);
+    border-color: rgba(192, 128, 16, 0.25);
     border-style: solid;
   }
 
@@ -208,17 +224,17 @@
     content: '';
     width: 32px;
     height: 1px;
-    background: linear-gradient(90deg, transparent, rgba(212, 163, 95, 0.5));
+    background: linear-gradient(90deg, transparent, rgba(192, 128, 16, 0.5));
   }
 
   .gold-flourish::after {
-    background: linear-gradient(90deg, rgba(212, 163, 95, 0.5), transparent);
+    background: linear-gradient(90deg, rgba(192, 128, 16, 0.5), transparent);
   }
 
   .gold-diamond {
     width: 5px;
     height: 5px;
-    background: rgba(212, 163, 95, 0.5);
+    background: rgba(192, 128, 16, 0.5);
     transform: rotate(45deg);
   }
 
@@ -233,30 +249,30 @@
     content: '';
     flex: 1;
     height: 1px;
-    background: linear-gradient(90deg, transparent, rgba(212, 163, 95, 0.25), transparent);
+    background: linear-gradient(90deg, transparent, rgba(192, 128, 16, 0.25), transparent);
   }
 
   .card-accent {
     position: relative;
     background: #FFFFFF;
-    border: 1px solid rgba(232, 220, 200, 0.6);
-    border-radius: 8px;
-    transition: all 0.3s ease;
+    border: 1px solid rgba(224, 216, 208, 0.6);
+    border-radius: 12px;
+    transition: all 0.2s ease;
   }
 
   .card-accent:hover {
-    border-color: rgba(212, 163, 95, 0.3);
-    box-shadow: 0 4px 20px rgba(212, 163, 95, 0.08);
+    border-color: rgba(192, 128, 16, 0.3);
+    box-shadow: 0 4px 20px rgba(192, 128, 16, 0.08);
   }
 
   .section-title-line {
     height: 1px;
-    background: linear-gradient(90deg, transparent, rgba(212, 163, 95, 0.3), transparent);
+    background: linear-gradient(90deg, transparent, rgba(192, 128, 16, 0.3), transparent);
     margin: 6px 0 16px;
   }
 
   .wood-sidebar {
-    background-color: #2C1810;
+    background-color: #1A0D06;
     background-image:
       repeating-linear-gradient(
         90deg,
@@ -286,34 +302,34 @@
       ),
       repeating-linear-gradient(
         90deg,
-        #2C1810 0px,
-        #3E2010 140px,
-        #2A150E 280px,
-        #3A1C0E 420px,
-        #2C1810 560px
+        #1A0D06 0px,
+        #2A1810 140px,
+        #1A0D06 280px,
+        #2A1810 420px,
+        #1A0D06 560px
       );
   }
 
   .modal-overlay {
-    background: rgba(44, 24, 16, 0.6);
+    background: rgba(0, 0, 0, 0.6);
     backdrop-filter: blur(4px);
   }
 
   .category-chip {
     background: #FFFFFF;
-    border: 1px solid rgba(232, 220, 200, 0.6);
-    color: #6B4226;
+    border: 1px solid rgba(224, 216, 208, 0.6);
+    color: #000000;
     transition: all 0.2s ease;
   }
 
   .category-chip:hover {
-    border-color: rgba(212, 163, 95, 0.4);
-    background: rgba(212, 163, 95, 0.04);
+    border-color: rgba(192, 128, 16, 0.4);
+    background: rgba(192, 128, 16, 0.04);
   }
 
   .category-chip-active {
-    background: rgba(212, 163, 95, 0.1);
-    border-color: rgba(212, 163, 95, 0.3);
-    color: #8B6914;
+    background: rgba(192, 128, 16, 0.1);
+    border-color: rgba(192, 128, 16, 0.3);
+    color: #C08010;
   }
 }

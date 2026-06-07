@@ -4,8 +4,8 @@
   "description": "Premium digital menu for Elshaday Restaurant",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#E8DDD1",
-  "theme_color": "#E8DDD1",
+  "background_color": "#FFFFFF",
+  "theme_color": "#1A0D06",
   "orientation": "portrait",
   "icons": [
     {

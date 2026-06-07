@@ -49,10 +49,10 @@ export const QRCodeGenerator: React.FC = () => {
         <div className="inline-flex items-center justify-center w-12 h-12 sm:w-16 sm:h-16 bg-gold rounded-2xl mb-4 shadow-lg shadow-gold/30">
           <QrCode className="w-6 h-6 sm:w-8 sm:h-8 text-white" />
         </div>
-        <h3 className="text-lg sm:text-xl font-bold text-coffee mb-2 font-heading">
+        <h3 className="text-lg sm:text-xl font-bold text-black mb-2 font-heading">
           QR Code Generator
         </h3>
-        <p className="text-sm text-coffee-muted/70 leading-relaxed">
+        <p className="text-sm text-muted/70 leading-relaxed">
           Generate a QR code for customers to scan and access the digital menu
         </p>
       </div>
@@ -62,8 +62,8 @@ export const QRCodeGenerator: React.FC = () => {
           <div className="w-48 h-48 bg-white rounded-3xl flex items-center justify-center border-2 border-gold/30 shadow-inner">
             <div className="text-center">
               <QrCode className="w-16 h-16 text-gold/50 mx-auto mb-2" />
-              <p className="text-xs text-coffee-muted/50">QR Code</p>
-              <p className="text-xs text-coffee-muted/30 mt-1 truncate max-w-[160px]">{RESTAURANT_URL}</p>
+              <p className="text-xs text-muted/50">QR Code</p>
+              <p className="text-xs text-muted/30 mt-1 truncate max-w-[160px]">{RESTAURANT_URL}</p>
             </div>
           </div>
         </div>
@@ -73,7 +73,7 @@ export const QRCodeGenerator: React.FC = () => {
         <button
           onClick={downloadQRCode}
           disabled={isGenerating}
-          className="w-full flex items-center justify-center space-x-2 px-4 py-3 bg-gold hover:bg-coffee-muted disabled:bg-gold/50 text-white rounded-2xl font-bold transition-all shadow-lg hover:shadow-gold/30"
+          className="w-full flex items-center justify-center space-x-2 px-4 py-3 bg-gold hover:bg-brown-dark disabled:bg-gold/50 text-white rounded-2xl font-bold transition-all shadow-lg hover:shadow-gold/30"
         >
           <Download size={18} />
           <span>{isGenerating ? 'Generating...' : 'Download QR Code'}</span>
@@ -81,7 +81,7 @@ export const QRCodeGenerator: React.FC = () => {
 
         <button
           onClick={shareQRCode}
-          className="w-full flex items-center justify-center space-x-2 px-4 py-3 bg-cream-dark hover:bg-border-warm text-coffee-muted rounded-2xl font-bold transition-all border border-border-warm hover:border-gold/30"
+          className="w-full flex items-center justify-center space-x-2 px-4 py-3 bg-cream-dark hover:bg-border-warm text-muted rounded-2xl font-bold transition-all border border-border-warm hover:border-gold/30"
         >
           <Share2 size={18} />
           <span>Share URL</span>
@@ -94,7 +94,7 @@ export const QRCodeGenerator: React.FC = () => {
         </p>
       </div>
 
-      <div className="mt-4 flex items-center justify-center space-x-2 text-xs text-coffee-muted/50">
+      <div className="mt-4 flex items-center justify-center space-x-2 text-xs text-muted/50">
         <Smartphone size={14} />
         <span>Customers can scan this QR code to view the menu</span>
       </div>
