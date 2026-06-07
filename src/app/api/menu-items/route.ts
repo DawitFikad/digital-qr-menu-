@@ -1,0 +1,23 @@
+import { NextResponse } from "next/server";
+import { getAllMenuItems, replaceAllMenuItems } from "@/lib/db/database";
+
+export const dynamic = "force-static";
+
+export async function GET() {
+  try {
+    const items = await getAllMenuItems();
+    return NextResponse.json(items);
+  } catch (e) {
+    return NextResponse.json({ error: String(e) }, { status: 500 });
+  }
+}
+
+export async function PUT(request: Request) {
+  try {
+    const items = await request.json();
+    await replaceAllMenuItems(items);
+    return NextResponse.json({ success: true });
+  } catch (e) {
+    return NextResponse.json({ success: false, error: String(e) }, { status: 400 });
+  }
+}
