@@ -11,6 +11,9 @@ import {
   Search, X, Menu, Globe, ChevronDown, Star, ShoppingCart, Plus, Minus, Trash2, Shield,
 } from "lucide-react";
 import { getAllMenuItems, getAllReviews, subscribeToMenuItems } from "@/lib/db/database";
+import dynamic from "next/dynamic";
+
+const ARView = dynamic(() => import("@/components/ARView").then((m) => m.ARView), { ssr: false });
 
 const LANGUAGES: { code: Language; label: string }[] = [
   { code: "en", label: "English" },
@@ -26,6 +29,12 @@ const CATEGORIES = [
   { id: "lunch", labelKey: "lunch" as const },
   { id: "drinks", labelKey: "drinks" as const },
 ];
+
+const AR_MODELS: Record<string, { glb: string; usdz: string; label: string }> = {
+  l1: { glb: "/doro.glb", usdz: "/doro.usdz", label: "Doro Wat" },
+  l2: { glb: "/ktfo.glb", usdz: "/ktfo.usdz", label: "Kitfo" },
+  l75: { glb: "/desert.glb", usdz: "/desert.usdz", label: "Chocolate Cake" },
+};
 
 const DRINK_SUBCATS = [
   { id: "hot", labelKey: "hotDrinks" as const },
@@ -206,7 +215,7 @@ export default function Home() {
             <div className="gold-flourish mb-4">
               <div className="gold-diamond" />
             </div>
-            <img src="/images/logop.png" alt="Paramount Cafe &amp; Pizzeria" className="h-20 md:h-24 mx-auto mb-3 object-contain" loading="eager" />
+            <img src="/images/logo2.png" alt="Paramount Cafe &amp; Pizzeria" className="h-20 md:h-24 mx-auto mb-3 object-contain" loading="eager" />
             <h1 className="text-2xl md:text-3xl font-logo text-black">{t.welcome} to</h1>
             <p className="text-2xl md:text-3xl font-logo text-gold mt-1">Paramount Cafe &amp; Pizzeria</p>
             <p className="text-xs md:text-sm font-heading text-muted tracking-[0.3em] uppercase mt-2">{t.tagline}</p>
@@ -365,7 +374,7 @@ export default function Home() {
               <motion.div initial={{ x: -300 }} animate={{ x: 0 }} exit={{ x: -300 }} transition={{ type: "spring", damping: 28, stiffness: 300 }} className="absolute top-0 left-0 bottom-0 w-[300px] max-w-[80vw] wood-sidebar border-r border-white/5 shadow-2xl overflow-y-auto" onClick={(e) => e.stopPropagation()}>
                 <div className="p-8">
                   <div className="flex items-start justify-between mb-1">
-                    <img src="/images/logop.png" alt="Paramount Cafe &amp; Pizzeria" className="h-12 md:h-14 object-contain" loading="eager" />
+                    <img src="/images/logo2.png" alt="Paramount Cafe &amp; Pizzeria" className="h-12 md:h-14 object-contain" loading="eager" />
                     <button onClick={() => setShowSidebar(false)} className="w-8 h-8 flex items-center justify-center text-white/50 hover:text-white transition-colors shrink-0"><X size={20} /></button>
                   </div>
                   <h2 className="text-lg font-logo text-white">{t.welcome} to</h2>
@@ -437,6 +446,15 @@ export default function Home() {
                   <img src={selectedItem.image} alt={(selectedItem.name[language] ?? selectedItem.name.en)} className="w-full h-full object-cover" />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent" />
                 </div>
+                {AR_MODELS[selectedItem.id] && (
+                  <div className="mx-5 mt-3">
+                    <ARView
+                      glbSrc={AR_MODELS[selectedItem.id].glb}
+                      usdzSrc={AR_MODELS[selectedItem.id].usdz}
+                      alt={AR_MODELS[selectedItem.id].label}
+                    />
+                  </div>
+                )}
                 <div className="p-5">
                   <h2 className="text-2xl font-item text-black font-semibold tracking-wide">{(selectedItem.name[language] ?? selectedItem.name.en)}</h2>
                   <p className="text-base text-black/70 leading-relaxed mt-3">{(selectedItem.description[language] ?? selectedItem.description.en)}</p>
