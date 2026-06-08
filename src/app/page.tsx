@@ -215,10 +215,11 @@ export default function Home() {
             <div className="gold-flourish mb-4">
               <div className="gold-diamond" />
             </div>
-            <img src="/images/logo2.png" alt="Paramount Cafe &amp; Pizzeria" className="h-20 md:h-24 mx-auto mb-3 object-contain" loading="eager" />
+            <img src="/images/logo3.png" alt="Paramount Cafe &amp; Pizzeria" className="h-20 md:h-24 mx-auto mb-3 object-contain" loading="eager" />
             <h1 className="text-2xl md:text-3xl font-logo text-black">{t.welcome} to</h1>
             <p className="text-2xl md:text-3xl font-logo text-gold mt-1">Paramount Cafe &amp; Pizzeria</p>
             <p className="text-xs md:text-sm font-heading text-muted tracking-[0.3em] uppercase mt-2">{t.tagline}</p>
+            <p className="text-[10px] text-gold/50 tracking-[0.2em] uppercase mt-2 font-heading animate-pulse" style={{ textShadow: "0 0 8px rgba(192,128,16,0.4)" }}>Powered by Kuraz Tech</p>
             <div className="tibeb-divider mt-5">
               <div className="tibeb-cross">
                 <div className="tibeb-cross-inner" />
@@ -374,7 +375,7 @@ export default function Home() {
               <motion.div initial={{ x: -300 }} animate={{ x: 0 }} exit={{ x: -300 }} transition={{ type: "spring", damping: 28, stiffness: 300 }} className="absolute top-0 left-0 bottom-0 w-[300px] max-w-[80vw] wood-sidebar border-r border-white/5 shadow-2xl overflow-y-auto" onClick={(e) => e.stopPropagation()}>
                 <div className="p-8">
                   <div className="flex items-start justify-between mb-1">
-                    <img src="/images/logo2.png" alt="Paramount Cafe &amp; Pizzeria" className="h-12 md:h-14 object-contain" loading="eager" />
+                    <img src="/images/logo3.png" alt="Paramount Cafe &amp; Pizzeria" className="h-12 md:h-14 object-contain" loading="eager" />
                     <button onClick={() => setShowSidebar(false)} className="w-8 h-8 flex items-center justify-center text-white/50 hover:text-white transition-colors shrink-0"><X size={20} /></button>
                   </div>
                   <h2 className="text-lg font-logo text-white">{t.welcome} to</h2>
@@ -410,6 +411,7 @@ export default function Home() {
                   <button onClick={() => window.location.href = "/admin"} className="mt-6 w-full py-3 px-4 rounded-xl text-xs text-white/30 hover:text-gold hover:bg-white/5 transition-all tracking-wider uppercase border border-white/10">
                     {t.admin}
                   </button>
+                  <p className="text-[9px] text-gold/40 tracking-[0.15em] uppercase mt-6 text-center font-heading animate-pulse" style={{ textShadow: "0 0 6px rgba(192,128,16,0.3)" }}>Powered by Kuraz Tech</p>
                 </div>
               </motion.div>
             </motion.div>

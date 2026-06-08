@@ -64,10 +64,14 @@ export default function AdminDashboard() {
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
-      if (!session) { router.push("/admin"); return; }
+      if (!session) { router.replace("/admin"); return; }
       setAuth(true);
       loadData();
     });
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
+      if (event === "SIGNED_OUT") router.replace("/admin");
+    });
+    return () => subscription.unsubscribe();
   }, [router]);
 
   useEffect(() => {
@@ -123,10 +127,19 @@ export default function AdminDashboard() {
     } catch (e: any) { alert("Delete failed: " + e.message); }
   };
 
-  const toggleAvailability = (id: string) =>
-    setItems((prev) =>
-      prev.map((i) => (i.id === id ? { ...i, is_available: !i.is_available } : i))
-    );
+  const toggleAvailability = async (id: string) => {
+    const item = items.find((i) => i.id === id);
+    if (!item) return;
+    const updated = { ...item, is_available: !item.is_available };
+    setItems((prev) => prev.map((i) => (i.id === id ? updated : i)));
+    try {
+      await upsertMenuItem(updated);
+      setOriginalItems((prev) => prev.map((i) => (i.id === id ? updated : i)));
+    } catch (e: any) {
+      setItems((prev) => prev.map((i) => (i.id === id ? item : i)));
+      alert("Toggle failed: " + e.message);
+    }
+  };
 
   const openEditor = (item?: MenuItem) => {
     setEditing(item ? { ...item } : emptyItem());
@@ -285,7 +298,7 @@ export default function AdminDashboard() {
             >
               <ChevronLeft size={20} />
             </button>
-            <h1 className="text-base font-bold text-gray-900">Admin</h1>
+            <img src="/images/logo3.png" alt="Paramount Cafe &amp; Pizzeria" className="h-8 w-auto object-contain" />
           </div>
           <div className="flex items-center gap-2">
             {hasChanges && (
@@ -626,12 +639,12 @@ export default function AdminDashboard() {
                   <div className="grid grid-cols-2 gap-3">
                     <div>
                       <label className="text-[10px] font-medium text-gray-400 uppercase tracking-wider">Price (ETB)</label>
-                      <input type="number" value={editing.price} onChange={(e) => updateField("price", Number(e.target.value))}
+                      <input type="text" inputMode="decimal" value={editing.price || ""} onChange={(e) => { const v = e.target.value.replace(/[^0-9.]/g, ""); updateField("price", v ? Number(v) : 0); }}
                         className="w-full mt-1 px-2.5 py-2 bg-gray-50 rounded-lg text-sm text-gray-900 border border-gray-200 focus:outline-none focus:ring-2 focus:ring-amber-500/30 focus:border-amber-400" />
                     </div>
                     <div>
                       <label className="text-[10px] font-medium text-gray-400 uppercase tracking-wider">Calories</label>
-                      <input type="number" value={editing.calories} onChange={(e) => updateField("calories", Number(e.target.value))}
+                      <input type="text" inputMode="numeric" value={editing.calories || ""} onChange={(e) => { const v = e.target.value.replace(/\D/g, ""); updateField("calories", v ? Number(v) : 0); }}
                         className="w-full mt-1 px-2.5 py-2 bg-gray-50 rounded-lg text-sm text-gray-900 border border-gray-200 focus:outline-none focus:ring-2 focus:ring-amber-500/30 focus:border-amber-400" />
                     </div>
                     <div>
@@ -641,7 +654,7 @@ export default function AdminDashboard() {
                     </div>
                     <div>
                       <label className="text-[10px] font-medium text-gray-400 uppercase tracking-wider">Rating</label>
-                      <input type="number" step="0.1" min="0" max="5" value={editing.rating} onChange={(e) => updateField("rating", Number(e.target.value))}
+                      <input type="text" inputMode="decimal" value={editing.rating || ""} onChange={(e) => { const v = e.target.value.replace(/[^0-9.]/g, ""); updateField("rating", v ? Number(v) : 0); }}
                         className="w-full mt-1 px-2.5 py-2 bg-gray-50 rounded-lg text-sm text-gray-900 border border-gray-200 focus:outline-none focus:ring-2 focus:ring-amber-500/30 focus:border-amber-400" />
                     </div>
                   </div>
@@ -742,8 +755,7 @@ export default function AdminDashboard() {
                 </div>
                 <div>
                   <label className="text-[10px] font-medium text-gray-400 uppercase tracking-wider">Sort Order</label>
-                  <input type="number" value={editingCat.sort_order}
-                    onChange={(e) => setEditingCat({ ...editingCat, sort_order: Number(e.target.value) })}
+                  <input type="text" inputMode="numeric" value={editingCat.sort_order || ""} onChange={(e) => { const v = e.target.value.replace(/\D/g, ""); setEditingCat({ ...editingCat, sort_order: v ? Number(v) : 0 }); }}
                     className="w-full mt-1 px-2.5 py-2 bg-gray-50 rounded-lg text-sm text-gray-900 border border-gray-200 focus:outline-none focus:ring-2 focus:ring-amber-500/30 focus:border-amber-400" />
                 </div>
                 <button onClick={handleSaveCategory}

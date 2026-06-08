@@ -90,7 +90,7 @@ export const MenuView: React.FC<MenuViewProps> = ({
       <header className="sticky top-0 z-40 bg-cream/95 backdrop-blur-lg border-b border-border-warm">
         <div className="flex items-center justify-between px-4 h-14">
           <Link href="/" className="flex items-center gap-2">
-            <img src="/images/logo2.png" alt="Paramount Cafe &amp; Pizzeria" className="h-8 w-auto object-contain" />
+            <img src="/images/logo3.png" alt="Paramount Cafe &amp; Pizzeria" className="h-8 w-auto object-contain" />
             <span className="text-[15px] font-bold text-gold tracking-tight hidden sm:inline">{title}</span>
           </Link>
           <div className="flex flex-col items-center absolute left-1/2 -translate-x-1/2">
