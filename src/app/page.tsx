@@ -8,7 +8,7 @@ import { MenuItem } from "@/data/menuData";
 import { Language } from "@/data/translations";
 import { cn } from "@/lib/utils";
 import {
-  Search, X, Menu, Globe, ChevronDown, Star, ShoppingCart, Plus, Minus, Trash2, Shield,
+  Search, X, Menu, Globe, ChevronDown, Star, ShoppingCart, Plus, Minus, Trash2, Shield, Box,
 } from "lucide-react";
 import { getAllMenuItems, getAllReviews, subscribeToMenuItems } from "@/lib/db/database";
 import dynamic from "next/dynamic";
@@ -456,7 +456,14 @@ export default function Home() {
                   </div>
                 )}
                 <div className="p-5">
-                  <h2 className="text-2xl font-item text-black font-semibold tracking-wide">{(selectedItem.name[language] ?? selectedItem.name.en)}</h2>
+                  <div className="flex items-center gap-2">
+                    <h2 className="text-2xl font-item text-black font-semibold tracking-wide">{(selectedItem.name[language] ?? selectedItem.name.en)}</h2>
+                    {selectedItem.id in AR_MODELS && (
+                      <span className="inline-flex items-center gap-0.5 text-[10px] font-bold text-purple-600 bg-purple-50 px-2 py-0.5 rounded-full border border-purple-200">
+                        <Box size={10} /> 3D
+                      </span>
+                    )}
+                  </div>
                   <p className="text-base text-black/70 leading-relaxed mt-3">{(selectedItem.description[language] ?? selectedItem.description.en)}</p>
                   <div className="mt-6 pt-4 border-t border-border-warm">
                     <span className="text-xl font-price text-gold font-semibold">{selectedItem.price} <span className="text-sm font-normal text-muted/50">{t.birr}</span></span>
@@ -677,9 +684,16 @@ function MenuItemRow({ item, language, t, reviews, onClick, delay, onAddToCart }
               <h3 className="text-lg md:text-xl font-item text-black font-semibold leading-tight group-hover:text-gold transition-colors tracking-wide">{(item.name[language] ?? item.name.en)}</h3>
               <span className="text-base md:text-lg font-price text-gold font-semibold flex-shrink-0">{item.price} <span className="text-xs font-normal text-muted/50">{t.birr}</span></span>
             </div>
-            {item.isFasting && (
-              <span className="inline-block text-[10px] font-heading text-muted/50 tracking-wider uppercase mt-0.5">{t.fasting}</span>
-            )}
+            <div className="flex items-center gap-1.5 mt-0.5">
+              {item.isFasting && (
+                <span className="text-[10px] font-heading text-muted/50 tracking-wider uppercase">{t.fasting}</span>
+              )}
+              {item.id in AR_MODELS && (
+                <span className="inline-flex items-center gap-0.5 text-[9px] font-bold text-purple-600 bg-purple-50 px-1.5 py-0.5 rounded-full border border-purple-200">
+                  <Box size={9} /> 3D
+                </span>
+              )}
+            </div>
             <p className="text-sm md:text-base text-black/70 mt-1 leading-relaxed line-clamp-2">{(item.description[language] ?? item.description.en)}</p>
             {itemReviews.length > 0 && (
               <div className="flex items-center gap-1.5 mt-1.5">

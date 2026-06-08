@@ -8,7 +8,7 @@ import { Language } from "@/data/translations";
 import { cn } from "@/lib/utils";
 import {
   Search, X, Clock, Flame, Snowflake, Shield,
-  ChevronLeft, Star, Globe, UtensilsCrossed, ShoppingCart, Plus
+  ChevronLeft, Star, Globe, UtensilsCrossed, ShoppingCart, Plus, Box
 } from "lucide-react";
 import Link from "next/link";
 
@@ -19,6 +19,8 @@ interface MenuViewProps {
   subtitle: string;
   accentColor?: string;
 }
+
+const AR_ITEM_IDS = new Set(["l1", "l2", "l75"]);
 
 const LANGUAGES: { code: Language; label: string }[] = [
   { code: "en", label: "EN" },
@@ -245,9 +247,16 @@ export const MenuView: React.FC<MenuViewProps> = ({
                   <div className="flex-1 p-3.5 min-w-0 flex flex-col justify-between">
                     <div>
                       <div className="flex items-start justify-between gap-2">
-                        <h3 className="text-sm font-bold text-black leading-tight line-clamp-1">
-                          {(item.name[language] ?? item.name.en)}
-                        </h3>
+                        <div className="flex items-center gap-1.5 min-w-0">
+                          <h3 className="text-sm font-bold text-black leading-tight line-clamp-1">
+                            {(item.name[language] ?? item.name.en)}
+                          </h3>
+                          {AR_ITEM_IDS.has(item.id) && (
+                            <span className="inline-flex items-center gap-0.5 text-[8px] font-bold text-purple-600 bg-purple-50 px-1 py-0.5 rounded-full border border-purple-200 shrink-0">
+                              <Box size={8} /> 3D
+                            </span>
+                          )}
+                        </div>
                         <div className="flex items-center gap-1 flex-shrink-0 bg-gold/10 px-1.5 py-0.5 rounded-full">
                           <Star size={8} className="text-gold fill-gold" />
                           <span className="text-[9px] font-bold text-gold">{item.rating}</span>

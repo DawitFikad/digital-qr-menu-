@@ -10,7 +10,7 @@ import { cn } from "@/lib/utils";
 import { AnimatePresence, motion } from "framer-motion";
 import {
   LogOut, Edit3, Trash2, Eye, EyeOff, Plus, ChevronLeft, Star, X, Save, RefreshCw,
-  MessageSquare, Search, Upload, Image,
+  MessageSquare, Search, Upload, Image, Box,
 } from "lucide-react";
 import {
   getAllMenuItems, upsertMenuItem, upsertMenuItems, deleteMenuItem,
@@ -24,6 +24,8 @@ interface Review {
 }
 
 type TabMode = "items" | "categories" | "messages";
+
+const AR_ITEM_IDS = new Set(["l1", "l2", "l75"]);
 
 const LANGUAGES: Language[] = ["en", "am", "or"];
 
@@ -419,9 +421,14 @@ export default function AdminDashboard() {
                     )}
                   </div>
                   <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-1.5">
+                    <div className="flex items-center gap-1.5 flex-wrap">
                       <span className="text-sm font-semibold text-gray-900 truncate">{item.name.en}</span>
                       {item.is_best_seller && <Star size={10} className="text-amber-500 fill-amber-500 shrink-0" />}
+                      {AR_ITEM_IDS.has(item.id) && (
+                        <span className="inline-flex items-center gap-0.5 text-[8px] font-bold text-purple-600 bg-purple-50 px-1 py-0.5 rounded-full border border-purple-200 shrink-0">
+                          <Box size={8} /> 3D
+                        </span>
+                      )}
                       {!item.is_available && <span className="text-[10px] text-red-500 font-medium shrink-0">Hidden</span>}
                     </div>
                     <div className="flex items-center gap-2 text-xs text-gray-400 mt-0.5">
