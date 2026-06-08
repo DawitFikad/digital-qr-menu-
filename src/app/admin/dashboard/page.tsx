@@ -149,13 +149,24 @@ export default function AdminDashboard() {
   const handleSaveItem = async () => {
     if (!editing) return;
     setSaving(true);
+    const filled = { ...editing } as any;
+    for (const field of ["name", "description", "ingredients", "allergens"] as const) {
+      const enVal = filled[field]?.en;
+      if (enVal) {
+        for (const lang of ["am", "or", "zh"]) {
+          if (!filled[field]?.[lang] || (Array.isArray(filled[field][lang]) && filled[field][lang].length === 0)) {
+            filled[field] = { ...filled[field], [lang]: Array.isArray(enVal) ? [...enVal] : enVal };
+          }
+        }
+      }
+    }
     try {
-      await upsertMenuItem(editing);
+      await upsertMenuItem(filled as MenuItem);
       setItems((prev) => {
-        const ex = prev.find((i) => i.id === editing.id);
+        const ex = prev.find((i) => i.id === filled.id);
         return ex
-          ? prev.map((i) => (i.id === editing.id ? editing : i))
-          : [...prev, editing];
+          ? prev.map((i) => (i.id === filled.id ? filled : i))
+          : [...prev, filled];
       });
       setShowEditor(false);
       setEditing(null);
@@ -176,9 +187,10 @@ export default function AdminDashboard() {
     if (!editing) return;
     const current = (editing[field] as any) || {};
     const updated: any = { ...current, [lang]: value };
-    if (lang === "en" && value && editing.id.startsWith("item_")) {
-      if (!current.am) updated.am = value;
-      if (!current.or) updated.or = value;
+    if (lang === "en" && value) {
+      for (const l of ["am", "or", "zh"]) {
+        if (!current[l]) updated[l] = value;
+      }
     }
     setEditing({ ...editing, [field]: updated } as MenuItem);
   };
