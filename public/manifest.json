@@ -1,7 +1,7 @@
 {
-  "name": "Elshaday Menu",
-  "short_name": "Elshaday",
-  "description": "Premium digital menu for Elshaday Restaurant",
+  "name": "Paramount Cafe & Pizzeria",
+  "short_name": "Paramount",
+  "description": "Premium digital menu for Paramount Cafe & Pizzeria",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#FFFFFF",
@@ -9,14 +9,14 @@
   "orientation": "portrait",
   "icons": [
     {
-      "src": "/icons/icon-192.svg",
+      "src": "/images/logo2.png",
       "sizes": "192x192",
-      "type": "image/svg+xml"
+      "type": "image/png"
     },
     {
-      "src": "/icons/icon-512.svg",
+      "src": "/images/logo2.png",
       "sizes": "512x512",
-      "type": "image/svg+xml"
+      "type": "image/png"
     }
   ]
 }

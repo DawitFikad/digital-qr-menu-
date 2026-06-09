@@ -11,13 +11,13 @@ export default function AdminLogin() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [showPw, setShowPw] = useState(false);
+  const [formId] = useState(() => Math.random().toString(36).slice(2, 10));
   const router = useRouter();
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      if (session) router.replace("/admin/dashboard");
-    });
-  }, [router]);
+    setEmail("");
+    setPassword("");
+  }, []);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -40,6 +40,7 @@ export default function AdminLogin() {
   return (
     <div className="luxury-bg flex items-center justify-center min-h-screen p-4">
       <form
+        key={formId}
         onSubmit={handleLogin}
         className="w-full max-w-sm bg-white rounded-3xl p-8 shadow-xl border border-border-warm"
       >
@@ -70,6 +71,7 @@ export default function AdminLogin() {
               onChange={(e) => setEmail(e.target.value)}
               className="w-full px-4 py-3 bg-cream-dark rounded-xl text-sm text-black focus:outline-none focus:ring-2 focus:ring-gold/50"
               placeholder="admin@example.com"
+              autoComplete="off"
               required
             />
           </div>
@@ -84,6 +86,7 @@ export default function AdminLogin() {
                 onChange={(e) => setPassword(e.target.value)}
                 className="w-full px-4 py-3 bg-cream-dark rounded-xl text-sm text-black focus:outline-none focus:ring-2 focus:ring-gold/50 pr-10"
                 placeholder="Enter password"
+                autoComplete="new-password"
                 required
               />
               <button

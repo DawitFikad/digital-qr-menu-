@@ -5,13 +5,17 @@ import { CartProvider } from "@/context/CartContext";
 import AppInit from "@/components/AppInit";
 
 export const metadata: Metadata = {
-  title: "Elshaday",
+  title: "Paramount Cafe & Pizzeria",
   description: "A Taste of Home — Premium Ethiopian Cuisine",
   manifest: "/manifest.json",
+  icons: {
+    icon: "/images/logo3.png",
+    apple: "/images/logo3.png",
+  },
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
-  title: "Welcome",
+    title: "Welcome",
   },
 };
 
@@ -31,7 +35,6 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-        <link rel="apple-touch-icon" href="/icons/icon-192.png" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Playfair+Display:wght@400;600;700&family=Cinzel:wght@400;600;700&family=Lato:wght@300;400;700&display=swap" rel="stylesheet" />
